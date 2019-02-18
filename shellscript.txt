@@ -1,0 +1,34 @@
+
+I want to use ping to check to see if a server is up.
+
+1.ping $URL
+if [$? -eq 0]; then
+    echo "server live"
+else
+    echo "server down"
+fi
+
+2.#!/bin/bash
+SERVERIP=192.168.2.3
+NOTIFYEMAIL=test@example.com
+
+ping -c 3 $SERVERIP > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+   # Use your favorite mailer here:
+   mailx -s "Server $SERVERIP is down" -t "$NOTIFYEMAIL" < /dev/null 
+fi
+
+++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++===============================
+Reverse proxy
+++++++++++++++++++++++++++++++++++++++++++++++++++
+<VirtualHost *:80>  
+    ServerName sonar.yourdomain.com
+    ServerAdmin me@yourdomain.com
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:9000/
+    ProxyPassReverse / http://localhost:9000/
+    TransferLog /var/log/apache2/sonar.yourdomain.com_access.log
+    ErrorLog /var/log/apache2/sonar.yourdomain.com_error.log
+</VirtualHost>
