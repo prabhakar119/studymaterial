@@ -1,0 +1,59 @@
+#!/bin/sh
+#file : deploy.sh
+#author: prabhakar
+#last updated:
+#desc: it performs de[ployement
+#params: deploy/start/stop
+echo "started deployement at : " `date`
+echo "deployement process"
+function DBdeploy()
+{
+  echo "--started DB deployement"
+   ssh vagrant@192.168.33.10 'mysql -uleadapp -pleadapp lead < /home/vagrant/schema.sql'
+}
+function DBbackup()
+{
+   echo "--started Db backup"
+}
+function stoptomcat()
+{
+   echo "--stopping tomcat"
+   ssh vagrant@192.168.33.10 'sh ?home/vagrant/apache-tomcat-7.0.75/bin/shutdown.sh'
+}
+function starttomcat()
+{
+  echo "--started tomcat"
+   ssh vagrant@192.168.33.10 'sh ?home/vagrant/apache-tomcat-7.0.75/bin/startup.sh'
+}
+function deployapp()
+{
+   echo "--started deployement"
+   scp dist/lib/leadapp.war vagrant@192.168.33.10:/home/vagrant/apache-tomcat-7.0.75/webapps
+}
+function backupapp()
+{
+   echo "--started backup of leadapp war"
+   ssh vagrant@192.168.33.10 'mv leadapp* /home/vagrant/db/'
+}
+
+if [ $# -eq 1 ]
+then
+case $1 in
+deploy)  stoptomcat
+         dbbackup
+         dbdeploy
+         backupapp
+         deployapp
+         starttomcat;;
+stop) stoptomcat;;
+start) starttomcat;;
+restart) stoptomcat;;
+         starttomcat;;
+*) echo "usage: sh deploy.sh deploy/restart/stop/start"
+esac
+
+else
+   echo "usage: sh deploy.sh deploy/restart/stop/start"
+
+fi
+echo "started deployement at : " `date`
