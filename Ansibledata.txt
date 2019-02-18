@@ -1,0 +1,269 @@
+=============================================================
+                    ANSIBLE
+============================================================
+CREATING AN EMPTY FILE IN ANSIBLE
+============================================================
+- hosts: all
+  tasks:
+  - name: Ansible create file if it doesn't exist example
+    file:
+      path: "/Users/mdtutorials2/Documents/Ansible/devops_server.txt"
+      state: touch
+=============================================================
+CREATE A NEW FILE WITH CONTENT
+===============================================================
+- hosts: all
+  tasks:
+  - name: Ansible create file with content example
+    copy:
+      dest: "/Users/mdtutorials2/Documents/Ansible/remote_server.txt"
+      content: |
+        dog1
+        tiger
+================================================================
+SETTING THE PERMISSIONS FOR A NEW FILE
+==================================================================
+- hosts: all
+  tasks:
+  - name: Ansible create new file with permissions example.
+    file:
+      path: "/Users/mdtutorials2/Documents/Ansible/devops.txt"
+      state: touch
+      mode: 0777
+      owner: mdtutorials2
+
+
+========================================================================
+CREATING MULTIPLE NEW FILES
+=====================================================================
+- hosts: all
+  tasks:
+  - name: Ansible create multiple files example
+    file: 
+      path: "{{ item }}"
+      state: touch
+      mode: 0775
+    with_items:
+    - int1.txt
+    - int2.txt
+    - int3.txt
+    - int4.txt
+
+- hosts: all
+  tasks:
+  - name: Ansible create multiple files example
+    file: 
+      path: "{{ item.location }}"
+      state: touch
+      mode: "{{ item.mode }}"
+    with_items:
+    - { location: 'int5.txt',mode: '0566'}
+    - { location: 'int6.txt',mode: '0766'}
+=======================================================================
+REPLACING THE STRINGS AND LINES IN ANSIBLE
+=======================================================================
+Input.txt
+---------
+Hello how are you
+hello1 case change
+hey hello there
+
+Code
+------
+- hosts: all
+  tasks:
+  - name: Ansible replace string example
+    replace:
+      path: /Users/mdtutorials2/Documents/Ansible/intext.txt
+      regexp: 'hello'
+      replace: "world"
+
+output
+------
+Hello how are you
+world1 case change
+hey world there
+================================================================
+Replace all instances of multiple strings with the same variable
+=================================================================
+input
+------
+cat
+dog
+tiger
+lion
+apple
+
+code
+------
+- hosts: all
+  tasks:
+  - name: Ansible replace multiple words example
+    replace:
+      path: /Users/mdtutorials2/Documents/Ansible/intext.txt
+      regexp: "{{ item }}"
+      replace: "dog"
+    with_items:
+    - 'cat'
+    - 'tiger'
+    - 'lion'
+
+output
+-------
+dog
+dog
+dog
+dog
+apple
+==============================================================
+Multiple replacement tasks in one task using with_items.
+==================================================================
+  tasks:
+  - name: Ansible multiple replace example
+    replace:
+      path: "{{ item.path }}"
+      regexp: "{{ item.regexp1 }}"
+      replace: "{{ item.replace }}"
+    with_items:
+      - { path: '/Users/mdtutorials2/Documents/Ansible/intext.txt', regexp1: 'cat', replace: 'dog'}
+      - { path: '/Users/mdtutorials2/Documents/Ansible/intext2.txt', regexp1: 'orange', replace: 'apple'}
+==================================================================
+Removing a particular string
+==================================================================
+input
+------
+hello dog world
+dog
+cat
+
+- hosts: all
+  tasks:
+  - name: Ansible remove words example
+    replace:
+      path: "/Users/mdtutorials2/Documents/Ansible/intext.txt"
+      regexp: "dog"
+
+output
+------
+hello  world
+cat
+
+======================================================================
+Accessing the environment variables
+======================================================================
+
+- hosts: all
+  gather_facts: False
+  tasks:
+    - name: Multiple environment? variables in a single line ansible task
+      debug:
+        msg: "{{ lookup('env','USER','HOME','SHELL') }}"
+
+output
+------
+"msg": "root,/Users/mdtutorials2,/bin/sh"
+
+==========================================================================
+Storing the value to another variable
+==========================================================================
+
+- hosts: all
+  vars:
+    local_shell:  "{{ lookup('env','SHELL') }}"
+  tasks:
+    - debug:
+        msg: "{{ local_shell }}"
+
+output
+------
+"msg": "/bin/sh"
+
+================================================================================
+Environment Variables in the Remote Servers/ Target Machines
+===============================================================================
+
+- hosts: all
+  gather_facts: true
+  tasks:
+    - name: Remote server ansible variables
+      debug:
+        msg: "{{ ansible_env.HOME }}"
+
+output
+------
+"msg": "/Users/mdtutorials3"
+
+
+- hosts: all
+  gather_facts: true
+  tasks:
+    - name: Printing all the environment? variables in Ansible
+      debug:
+        msg: "{{ ansible_env }}"
+
+output
+------
+    "msg": {
+        "HOME": "/Users/mdtutorials3", 
+        "LANG": "en_US.UTF-8", 
+        "LOGNAME": "root", 
+        "MAIL": "/var/mail/root",
+        "PWD": "/Users/mdtutorials3", 
+        "SHELL": "/bin/sh",
+    }
+======================================================================================
+====================================================================
+Update all packages
+======================================================================
+
+- hosts: all
+  tasks:
+  - name: Upgrade all yum packages ansible.
+    yum:
+      name: "*"
+      state: latest
+
+- hosts: all  (EXCLUDED GIT)
+  tasks:
+  - name: Exclude some packages from upgrade in Ansible.
+    yum:
+      name: "*"
+      state: latest
+      exclude: git*
+===============================================================================
+
+If you want to move/rename a file entirely on a remote system then your best bet is to use the command module to just invoke the appropriate command:
+
+- name: Move foo to bar
+  command: mv /path/to/foo /path/to/bar
+If you want to get fancy then you could first use the stat module to check that foo actually exists:
+
+- name: stat foo
+  stat: path=/path/to/foo
+  register: foo_stat
+
+- name: Move foo to bar
+  command: mv /path/to/foo /path/to/bar
+  when: foo_stat.stat.exists
++++++++++++++++++++++++++++++++++++++++++++
+- name: Remove old files foo
+  file: path=/path/to/foo state=absent
+++++++++++++++++++++++++++++++++++++++
+- name: stat foo
+  stat: path=/path/to/foo
+  register: foo_stat
+
+- name: Move foo to bar
+  command: creates="path/to/bar" mv /path/to/foo /path/to/bar
+  when: foo_stat.stat.exists
+
+====================================================================================
+
+
+
+
+
+
+
+     
+
