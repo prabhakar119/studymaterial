@@ -1,0 +1,73 @@
+apt insatll git -y
+apt update
+apt install maven -y
+apt install openjdk-8-jdk
+
+download jenkins .war file 
+java -jar jenkins.war
+fully up runnung
+Maven home: /usr/share/maven
+Java home: /usr/lib/jvm/java-8-openjdk-amd64/jre
+Env Path:
+export PATH=/usr/local/bin/terraform:$PATH
+stress --cpu 10 -v --timeout 400s
+
+
+=====================================================
+jenkins issues
+=====================================================
+1.jenkins ui issue:
+===================
+I realised I might have memory issues on the server where I was running Jenkins, and the UI had crashed. 
+Now, the UI won't load even after freeing up memory space.Finally, I restarted my Jenkins server
+2.I did some research about Jenkins UI freeze and found that in most of the times it happens due to the java garbage collector. 
+3.nodes failure
+4.workspace full
+5.plugin related issues
+===============================================
+SSH COMMANDS
+===============================================
+ssh -i mindtreekey.pem ubuntu@34.220.114.15
+mysql -u root -p
+mysql -u root -h hostname -p:connet to remote dbmachine
+date %H-%M-%S
+ansible -i hosts -m ping test1
+ansible-playbook -i hosts play.yml
+ctrl+pq:for exit from the container without stopping
+ansicolor plugin
+nl sample.txt | grep -w 20 | awk '{print$2}'  set linenumbers
+=====================================================
+mysqldatabase create users
+====================================================
+mysql -u root -p
+passwd:
+show databases;
+create database people;
+use people;
+create table register ( id num(10), name varchar(50), lastname varchar(50), age init(3));
+show tables;
+desc register;
+select * from register;
+delete from register;
+=======================================================
+python fibonacci
+=======================================================
+a,b=0,1
+
+for i in range(0,20):
+   
+print(a)
+    
+a,b=b,a+b
+=======================================================
+aws s3 copy command
+=======================================================
+aws s3 cp vpc.tf s3://cf-templates-o5sw938qxuhl-us-west-2/
+aws s3 sync /var/log/ bucket name
+=======================================================
+Terraform commands
+=======================================================
+terraform fmt for format alliance:
+terraform console
+terraform plan
+terraform apply
